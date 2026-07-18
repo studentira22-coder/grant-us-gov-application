@@ -2586,25 +2586,26 @@ function showAlert(type,title,message){
 
     alert.className="custom-alert";
 
-    alert.style.cssText=`
-        position:fixed;
-        top:20px;
-        right:20px;
-        width:340px;
-        max-width:90%;
-        background:#fff;
-        border-left:6px solid ${colors[type]};
-        border-radius:12px;
-        box-shadow:0 15px 35px rgba(0,0,0,.18);
-        padding:16px;
-        display:flex;
-        align-items:flex-start;
-        gap:14px;
-        z-index:999999;
-        transform:translateX(420px);
-        transition:.35s;
-        font-family:Arial,sans-serif;
-    `;
+alert.style.cssText=`
+    position:fixed;
+    top:20px;
+    right:20px;
+    width:340px;
+    max-width:90%;
+    background:#fff;
+    border-left:6px solid ${colors[type]};
+    border-radius:12px;
+    box-shadow:0 15px 35px rgba(0,0,0,.18);
+    padding:16px;
+    display:flex;
+    align-items:flex-start;
+    gap:14px;
+    z-index:999999;
+    opacity:1;
+    transform:translateX(100%);
+    transition:all .35s ease;
+    font-family:Arial,sans-serif;
+`;
 
     alert.innerHTML=`
         <div style="
@@ -2648,6 +2649,7 @@ function showAlert(type,title,message){
 
     setTimeout(function(){
         alert.style.transform="translateX(0)";
+        alert.style.opacity="1";
     },20);
 
     setTimeout(function(){
